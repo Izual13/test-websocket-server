@@ -10,18 +10,19 @@
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
-            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('response').innerHTML = '';
         }
 
         function connect() {
             var socket = new SockJS('/socket');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
+            stompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic', function(message){
-                    showGreeting(message.body);
+                stompClient.subscribe('/scheduler', function (message) {
+                    document.getElementById('scheduler').innerHTML = message.body;
+                });
+                stompClient.subscribe('/topic', function (message) {
+                    document.getElementById('topic').innerHTML = message.body;
                 });
             });
         }
@@ -31,25 +32,18 @@
             setConnected(false);
             console.log("Disconnected");
         }
-
-        function showGreeting(message) {
-            var response = document.getElementById('response');
-            var p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
-            response.appendChild(p);
-        }
+        connect();
     </script>
 </head>
 <body>
 <div>
     <div>
+        <a href="http://localhost:8080">test</a>
         <button id="connect" onclick="connect();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
-    <div id="conversationDiv">
-        <p id="response"></p>
-    </div>
+    <p id="scheduler"></p>
+    <p id="topic"></p>
 </div>
 </body>
 </html>
