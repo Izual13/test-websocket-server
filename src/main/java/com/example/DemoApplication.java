@@ -5,9 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.core.MessageSendingOperations;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,11 +18,15 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+
 @SpringBootApplication
 public class DemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
+        System.out.println("http://localhost:8080/");
         System.out.println("http://localhost:8080/start");
     }
 
@@ -33,7 +37,7 @@ public class DemoApplication {
 
         @Override
         public void configureMessageBroker(MessageBrokerRegistry config) {
-            config.enableSimpleBroker("/topic");
+            config.enableSimpleBroker("/topic", "/scheduler");
         }
 
         @Override
@@ -49,11 +53,6 @@ public class DemoApplication {
 
         @Autowired
         MessagingService messagingService;
-
-        @SendTo("/topic")
-        public String show() {
-            return "ping";
-        }
 
         @RequestMapping("/start")
         public String start() {
@@ -85,6 +84,13 @@ public class DemoApplication {
         public void loginUser() {
             String destination = "/topic";
             this.messagingTemplate.convertAndSend(destination, "ping");
+        }
+
+        @Scheduled(fixedDelay = 1000)
+        public void scheduler() {
+            String destination = "/scheduler";
+            BigInteger prime = BigInteger.probablePrime(512, new SecureRandom());
+            this.messagingTemplate.convertAndSend(destination, prime.toString());
         }
     }
 }
