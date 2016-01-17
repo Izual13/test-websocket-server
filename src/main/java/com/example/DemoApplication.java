@@ -82,6 +82,7 @@ public class DemoApplication {
         private MessageSendingOperations<String> messagingTemplate;
 
         public void loginUser() {
+            System.out.println("loginUser");
             String destination = "/topic";
             this.messagingTemplate.convertAndSend(destination, "ping");
         }
