@@ -3,6 +3,8 @@ package com.example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -21,7 +23,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class DemoApplication {
 
     public static void main(String[] args) {
